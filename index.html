@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <link rel="stylesheet" href="style.css">  <!-- Linking CSS -->
+</head>
+<body>
+    <div class="chat-container">
+        <h2>Simple Chat App</h2>
+        <div id="chatBox"></div>  <!-- Chat messages will appear here -->
+
+        <div class="input-container">
+            <input id="messageInput" type="text" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io("http://localhost:3000");  // Connect to the server
+
+        // Listen for incoming messages and display them
+        socket.on("receiveMessage", (message) => {
+            console.log("Message received:", message);
+            const chatBox = document.getElementById("chatBox");
+            const msgElement = document.createElement("p");
+            msgElement.classList.add("message");
+            msgElement.innerText = message;
+            chatBox.appendChild(msgElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
+        });
+
+        function sendMessage() {
+            const message = document.getElementById("messageInput").value;
+            if (message.trim() !== "") {
+                socket.emit("sendMessage", message); // Send message to server
+                document.getElementById("messageInput").value = "";
+            }
+        }
+    </script>
+</body>
+</html>
